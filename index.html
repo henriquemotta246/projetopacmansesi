@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Pac-Man Neon Arcade</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<main id="app">
+
+  <!-- ================= HUD (placar em tempo real) ================= -->
+  <header class="hud">
+    <div class="hud-box"><small>Jogador</small><b id="hudName">---</b></div>
+    <div class="hud-box"><small>Pontos</small><b id="hudScore">0</b></div>
+    <div class="hud-box"><small>Recorde</small><b id="hudHigh">0</b></div>
+    <div class="hud-box"><small>Fase</small><b id="hudLevel">1</b></div>
+    <div class="hud-box"><small>Vidas</small><canvas id="livesCanvas" width="92" height="26"></canvas></div>
+    <button id="btnMute" class="icon-btn" type="button" title="Ligar/desligar som (M)">🔊</button>
+  </header>
+
+  <!-- ================= PALCO: canvas + telas sobrepostas ================= -->
+  <div class="stage" id="stage">
+    <canvas id="game" width="456" height="504"></canvas>
+
+    <!-- TELA INICIAL -->
+    <section class="screen" id="screen-start">
+      <div class="title-wrap">
+        <div class="title-pac" aria-hidden="true"></div>
+        <h1 class="title">PAC-MAN</h1>
+        <p class="subtitle">Neon Arcade</p>
+      </div>
+      <div class="menu">
+        <button class="btn primary" id="btnPlay" type="button">Start Game</button>
+        <button class="btn" id="btnCostumes" type="button">Fantasias</button>
+        <button class="btn" id="btnRanking" type="button">Recordes</button>
+      </div>
+      <p class="hint">Setas ou W A S D · Controle Xbox/PlayStation · P pausa</p>
+    </section>
+
+    <!-- TELA DE CADASTRO DE NOME -->
+    <section class="screen hidden" id="screen-name">
+      <h2>Quem vai jogar?</h2>
+      <canvas id="namePreview" width="110" height="110"></canvas>
+      <form id="nameForm" class="name-form" autocomplete="off">
+        <label for="nameInput">Seu nome para o ranking</label>
+        <input id="nameInput" type="text" maxlength="12" placeholder="Ex.: Ana" required>
+        <button class="btn primary" type="submit">Começar</button>
+        <button class="btn" id="btnNameCostumes" type="button">Trocar fantasia</button>
+        <button class="btn ghost" id="btnNameBack" type="button">Voltar</button>
+      </form>
+    </section>
+
+    <!-- TELA DE FANTASIAS -->
+    <section class="screen hidden" id="screen-costumes">
+      <h2>Fantasias do Pac-Man</h2>
+      <div id="costumeGrid" class="costume-grid"></div>
+      <button class="btn primary" id="btnCostumesBack" type="button">Pronto</button>
+    </section>
+
+    <!-- TELA DE RECORDES -->
+    <section class="screen hidden" id="screen-ranking">
+      <h2>Pódio</h2>
+      <div id="podiumMain" class="podium"></div>
+      <ol id="rankListMain" class="rank-list"></ol>
+      <button class="btn primary" id="btnRankingBack" type="button">Voltar</button>
+    </section>
+
+    <!-- TELA DE FASE COMPLETA / AVANÇO -->
+    <section class="screen hidden" id="screen-levelup">
+      <h2 id="luTitle">Fase 1 completa!</h2>
+      <p id="luBonus" class="big-note">Bônus +500</p>
+      <div class="power-card">
+        <span class="power-dot" id="luPowerDot"></span>
+        <div>
+          <small>Na próxima fase</small>
+          <strong id="luPowerName">O Estrategista</strong>
+          <p id="luPowerDesc">descrição</p>
+        </div>
+      </div>
+      <button class="btn primary" id="btnNextLevel" type="button">Próxima fase</button>
+    </section>
+
+    <!-- TELA DE GAME OVER / VITÓRIA FINAL -->
+    <section class="screen hidden" id="screen-gameover">
+      <h2 id="goTitle">Game Over</h2>
+      <p id="goScore" class="big-note">0 pontos</p>
+      <p id="goRankMsg" class="note"></p>
+      <div id="podiumGO" class="podium"></div>
+      <ol id="rankListGO" class="rank-list"></ol>
+      <div class="row">
+        <button class="btn primary" id="btnAgain" type="button">Jogar de novo</button>
+        <button class="btn" id="btnToMenu" type="button">Menu</button>
+      </div>
+    </section>
+
+    <!-- TELA DE PAUSA -->
+    <section class="screen hidden" id="screen-pause">
+      <h2>Pausado</h2>
+      <div class="menu">
+        <button class="btn primary" id="btnResume" type="button">Continuar</button>
+        <button class="btn" id="btnQuit" type="button">Sair para o menu</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= Barra do poder da fase ================= -->
+  <section class="power-bar" id="powerBar" aria-live="polite">
+    <div class="power-now">
+      <span class="power-dot" id="pbDot"></span>
+      <span><strong id="pbName">—</strong> <span id="pbDesc"></span></span>
+    </div>
+    <div class="power-scale" id="pbScale" title="Nível de poder: do azul claro ao vermelho"></div>
+  </section>
+
+  <p class="help" id="helpLine">
+    <span id="padStatus">Nenhum controle detectado (opcional)</span>
+  </p>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
