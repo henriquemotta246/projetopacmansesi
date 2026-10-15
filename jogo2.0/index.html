@@ -1,2 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Pac-Man Neon Arcade</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-  <!--tenho que fazer o resto do jogo parte 2-->
+<main id="app">
+
+  <!-- ================= HUD (placar em tempo real) ================= -->
+  <header class="hud">
+    <div class="hud-box"><small id="hudNameLbl">Jogador</small><b id="hudName">---</b></div>
+    <div class="hud-box"><small>Pontos</small><b id="hudScore">0</b></div>
+    <div class="hud-box"><small>Recorde</small><b id="hudHigh">0</b></div>
+    <div class="hud-box"><small>Fase</small><b id="hudLevel">1</b></div>
+    <div class="hud-box"><small>Vidas</small><canvas id="livesCanvas" width="92" height="26"></canvas></div>
+    <button id="btnMute" class="icon-btn" type="button" title="Ligar/desligar som (M)">🔊</button>
+  </header>
+
+  <!-- ================= PALCO: canvas + telas sobrepostas ================= -->
+  <div class="stage" id="stage">
+    <canvas id="game" width="456" height="504"></canvas>
+
+    <!-- TELA INICIAL (capa) + TERMO DE CONSCIENTIZAÇÃO -->
+    <section class="screen" id="screen-start">
+      <div class="title-wrap">
+        <div class="title-pac" aria-hidden="true"></div>
+        <h1 class="title">PAC-MAN</h1>
+        <p class="subtitle">Neon Arcade</p>
+      </div>
+
+      <!-- Termo: precisa ser aceito para liberar o "Start Game" -->
+      <div class="consent-box">
+        <button type="button" id="btnConsent" class="consent-toggle" role="checkbox" aria-checked="false">
+          <span class="box" aria-hidden="true"></span>
+          <span class="ctext">Li e aceito o <b>Termo de Conscientização e Autorização de Dados</b></span>
+        </button>
+        <button type="button" id="btnTerms" class="link-btn">Ler o termo completo</button>
+      </div>
+
+      <div class="menu">
+        <button class="btn primary" id="btnPlay" type="button" disabled>Start Game</button>
+        <button class="btn" id="btnCostumes" type="button">Fantasias</button>
+        <button class="btn" id="btnRanking" type="button">Recordes</button>
+      </div>
+      <p class="hint">Setas ou W A S D · Controle Xbox/PlayStation · P pausa</p>
+    </section>
+
+    <!-- TELA DO TERMO COMPLETO -->
+    <section class="screen hidden" id="screen-terms">
+      <h2>Termo de Conscientização e Autorização de Dados</h2>
+      <div class="terms-text" id="termsText" tabindex="0">
+        <p><b>1. Quais dados são usados.</b> O jogo guarda apenas: o nome/apelido que você digita, sua pontuação, a fase alcançada, a dificuldade e a data da partida, além das suas preferências (fantasia, som e dificuldade).</p>
+        <p><b>2. Para que servem.</b> Exibir o ranking e o pódio de melhores jogadores (incluindo uma eventual premiação) e lembrar suas escolhas na próxima vez que jogar.</p>
+        <p><b>3. Onde ficam guardados.</b> Somente no navegador deste dispositivo (armazenamento local). Nenhum dado é enviado a servidores, vendido ou compartilhado com terceiros.</p>
+        <p><b>4. Sua autorização.</b> Ao marcar a caixa de aceite, você autoriza o armazenamento local desses dados e a exibição do seu nome no ranking deste dispositivo. Sem o aceite, o jogo não é iniciado.</p>
+        <p><b>5. Seus direitos.</b> Você pode revogar a autorização e apagar tudo a qualquer momento pelo botão "Apagar meus dados" abaixo, ou limpando os dados do site no navegador.</p>
+        <p><b>6. Boas práticas.</b> Use um apelido. Não digite nome completo, telefone, e-mail ou outros dados pessoais ou sensíveis no campo de nome, pois ele aparece no ranking.</p>
+        <p><b>7. Menores de 18 anos.</b> Jogadores menores devem ler este termo e jogar com ciência e autorização de um responsável.</p>
+        <p><b>8. Premiação.</b> Se o ranking for usado em um evento ou campeonato com prêmios, o organizador deve informar separadamente as regras, o contato e como os dados dos vencedores serão tratados.</p>
+      </div>
+      <p class="note" id="termsMsg"></p>
+      <div class="menu">
+        <button class="btn primary" id="btnTermsAccept" type="button">Aceitar e voltar</button>
+        <button class="btn" id="btnTermsBack" type="button">Voltar</button>
+        <button class="btn danger" id="btnErase" type="button">Apagar meus dados</button>
+      </div>
+    </section>
+
+    <!-- TELA DE CADASTRO DE NOME + DIFICULDADE -->
+    <section class="screen hidden" id="screen-name">
+      <h2>Quem vai jogar?</h2>
+      <canvas id="namePreview" width="110" height="110"></canvas>
+      <form id="nameForm" class="name-form" autocomplete="off">
+        <label for="nameInput">Seu apelido para o ranking</label>
+        <input id="nameInput" type="text" maxlength="12" placeholder="Ex.: Ana" required>
+        <label>Dificuldade</label>
+        <div class="seg" id="diffSeg" role="radiogroup" aria-label="Dificuldade">
+          <button type="button" class="seg-btn" data-diff="easy" role="radio" aria-checked="false">Fácil</button>
+          <button type="button" class="seg-btn" data-diff="medium" role="radio" aria-checked="false">Médio</button>
+          <button type="button" class="seg-btn" data-diff="hard" role="radio" aria-checked="false">Difícil</button>
+        </div>
+        <p class="note" id="diffDesc"></p>
+        <button class="btn primary" type="submit">Começar</button>
+        <button class="btn" id="btnNameCostumes" type="button">Trocar fantasia</button>
+        <button class="btn ghost" id="btnNameBack" type="button">Voltar</button>
+      </form>
+    </section>
+
+    <!-- TELA DE FANTASIAS -->
+    <section class="screen hidden" id="screen-costumes">
+      <h2>Fantasias do Pac-Man</h2>
+      <div id="costumeGrid" class="costume-grid"></div>
+      <button class="btn primary" id="btnCostumesBack" type="button">Pronto</button>
+    </section>
+
+    <!-- TELA DE RECORDES -->
+    <section class="screen hidden" id="screen-ranking">
+      <h2>Pódio</h2>
+      <div id="podiumMain" class="podium"></div>
+      <ol id="rankListMain" class="rank-list"></ol>
+      <button class="btn primary" id="btnRankingBack" type="button">Voltar</button>
+    </section>
+
+    <!-- TELA DE FASE COMPLETA / AVANÇO -->
+    <section class="screen hidden" id="screen-levelup">
+      <h2 id="luTitle">Fase 1 completa!</h2>
+      <p id="luBonus" class="big-note">Bônus +500</p>
+      <p id="luMap" class="note"></p>
+      <div class="power-card">
+        <span class="power-dot" id="luPowerDot"></span>
+        <div>
+          <small>Na próxima fase</small>
+          <strong id="luPowerName">O Estrategista</strong>
+          <p id="luPowerDesc">descrição</p>
+        </div>
+      </div>
+      <button class="btn primary" id="btnNextLevel" type="button">Próxima fase</button>
+    </section>
+
+    <!-- TELA DE GAME OVER / VITÓRIA FINAL -->
+    <section class="screen hidden" id="screen-gameover">
+      <h2 id="goTitle">Game Over</h2>
+      <p id="goScore" class="big-note">0 pontos</p>
+      <p id="goRankMsg" class="note"></p>
+      <div id="podiumGO" class="podium"></div>
+      <ol id="rankListGO" class="rank-list"></ol>
+      <div class="row">
+        <button class="btn primary" id="btnAgain" type="button">Jogar de novo</button>
+        <button class="btn" id="btnToMenu" type="button">Menu</button>
+      </div>
+    </section>
+
+    <!-- TELA DE PAUSA -->
+    <section class="screen hidden" id="screen-pause">
+      <h2>Pausado</h2>
+      <div class="menu">
+        <button class="btn primary" id="btnResume" type="button">Continuar</button>
+        <button class="btn" id="btnQuit" type="button">Sair para o menu</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= Barra do poder da fase ================= -->
+  <section class="power-bar" id="powerBar" aria-live="polite">
+    <div class="power-now">
+      <span class="power-dot" id="pbDot"></span>
+      <span><strong id="pbName">—</strong> <span id="pbDesc"></span></span>
+    </div>
+    <div class="power-scale" id="pbScale" title="Nível de poder: do azul claro ao vermelho"></div>
+  </section>
+
+  <p class="help" id="helpLine">
+    <span id="padStatus">Nenhum controle detectado (opcional)</span>
+  </p>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
