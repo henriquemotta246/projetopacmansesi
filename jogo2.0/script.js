@@ -4,11 +4,7 @@
 
    Índice:
      1. Constantes e utilidades
-<<<<<<< HEAD
      2. Labirintos (mapas, colisão, BFS)
-=======
-     2. Labirintos (5 mapas, colisão, BFS)
->>>>>>> a145012ac0de29cb5f2ed543743baed72e1c9ac0
      3. Fantasias do Pac-Man
      4. Dificuldades e poderes dos fantasmas
      5. Áudio
@@ -485,10 +481,7 @@ const sfx = {
 /* =====================================================================
    6. RANKING E PREFERÊNCIAS (localStorage)
    Só grava dados se o jogador aceitou o termo (variável "consent").
-<<<<<<< HEAD
    Cada registro guarda: nome, pontos, FASE em que a partida terminou, dificuldade e data.
-=======
->>>>>>> a145012ac0de29cb5f2ed543743baed72e1c9ac0
    ===================================================================== */
 let consent = lsGet(STORE.consent, '') !== '';
 let diffKey = lsGet(STORE.diff, 'medium');
@@ -517,14 +510,11 @@ function saveScoreEntry(entry) {
 }
 function bestScore() { const r = loadRanking(); return r.length ? r[0].score : 0; }
 
-<<<<<<< HEAD
 /** Texto da fase do recorde, ex.: "Fase 3 · MÉD" */
 function levelLabel(e) {
   return 'Fase ' + (e.level || 1) + ((DIFFS[e.diff] || {}).short ? ' · ' + DIFFS[e.diff].short : '');
 }
 
-=======
->>>>>>> a145012ac0de29cb5f2ed543743baed72e1c9ac0
 function renderRanking(podiumEl, listEl, hl) {
   const r = loadRanking();
   const same = (e) => hl && e && e.date === hl.date && e.score === hl.score && e.name === hl.name;
@@ -536,14 +526,9 @@ function renderRanking(podiumEl, listEl, hl) {
     const medal = document.createElement('div'); medal.className = 'medal'; medal.textContent = ['🥇', '🥈', '🥉'][i];
     const nm = document.createElement('div'); nm.className = 'pname'; nm.textContent = e ? e.name : '---';
     const sc = document.createElement('div'); sc.className = 'pscore'; sc.textContent = e ? e.score : '0';
-<<<<<<< HEAD
     const lv = document.createElement('div'); lv.className = 'plevel'; lv.textContent = e ? levelLabel(e) : '';
     const st = document.createElement('div'); st.className = 'step';
     d.append(medal, nm, sc, lv, st);
-=======
-    const st = document.createElement('div'); st.className = 'step';
-    d.append(medal, nm, sc, st);
->>>>>>> a145012ac0de29cb5f2ed543743baed72e1c9ac0
     podiumEl.appendChild(d);
   });
   listEl.replaceChildren();
@@ -558,12 +543,7 @@ function renderRanking(podiumEl, listEl, hl) {
     if (same(e)) li.className = 'me';
     const a = document.createElement('span'); a.textContent = (i + 1) + 'º';
     const b = document.createElement('span'); b.textContent = e.name;
-<<<<<<< HEAD
     const c = document.createElement('span'); c.className = 'lv'; c.textContent = levelLabel(e);
-=======
-    const c = document.createElement('span'); c.className = 'lv';
-    c.textContent = 'F' + (e.level || 1) + ' ' + ((DIFFS[e.diff] || {}).short || '');
->>>>>>> a145012ac0de29cb5f2ed543743baed72e1c9ac0
     const d = document.createElement('span'); d.className = 'sc'; d.textContent = e.score;
     li.append(a, b, c, d);
     listEl.appendChild(li);
@@ -916,22 +896,15 @@ function afterClear() {
 
 function gameOver(win) {
   state = 'gameover';
-<<<<<<< HEAD
   // "level" é a fase em que a partida terminou: é ela que vai para o ranking
-=======
->>>>>>> a145012ac0de29cb5f2ed543743baed72e1c9ac0
   const entry = { name: playerName, score, level, diff: diffKey, date: Date.now() };
   const pos = saveScoreEntry(entry);
   lastRank = entry;
   $('goTitle').textContent = win ? 'Você venceu!' : 'Game Over';
   $('goScore').textContent = score + ' pontos · fase ' + level;
-<<<<<<< HEAD
   $('goRankMsg').textContent = pos
     ? (pos === 1 ? 'Novo recorde na fase ' + level + '! Você é o nº 1 do ranking.' : 'Você ficou em ' + pos + 'º lugar no ranking (fase ' + level + ').')
     : 'Não foi dessa vez: fora do Top 10.';
-=======
-  $('goRankMsg').textContent = pos ? (pos === 1 ? 'Novo recorde! Você é o nº 1 do ranking.' : 'Você ficou em ' + pos + 'º lugar no ranking.') : 'Não foi dessa vez: fora do Top 10.';
->>>>>>> a145012ac0de29cb5f2ed543743baed72e1c9ac0
   renderRanking($('podiumGO'), $('rankListGO'), entry);
   showScreen('screen-gameover');
 }
@@ -1525,8 +1498,4 @@ updatePowerBar();
 showScreen('screen-start');
 requestAnimationFrame(frame);
 
-<<<<<<< HEAD
 })();
-=======
-})();
->>>>>>> a145012ac0de29cb5f2ed543743baed72e1c9ac0
